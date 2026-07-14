@@ -232,6 +232,7 @@ async function nuevoJuego() {
   ganado = false;
   extra = {};
   $("#panel").classList.add("oculto");
+  ocultarCompartir();
   mensaje("preparando partida…");
   [origen, destino] = await elegirObjetivos();
   enTablero = new Set([origen, destino]);
@@ -442,6 +443,7 @@ function ganar(aristas) {
   marcarRuta(caminoMasCorto(aristas));
   const usadas = enTablero.size - 2;
   mensaje(`conectado con ${usadas} palabra${usadas === 1 ? "" : "s"} puente`, "ok");
+  if (puedeCompartir()) $("#btn-compartir").classList.remove("oculto");
 }
 
 async function anadirPalabra(cruda) {
@@ -536,6 +538,66 @@ function mensaje(txt, tipo = "") {
   el.className = "mensaje" + (tipo ? " " + tipo : "");
 }
 
+function urlJuego() {
+  const u = new URL(location.href);
+  u.search = "";
+  u.hash = "";
+  return u.href.replace(/\/$/, "") || u.origin;
+}
+
+function puedeCompartir() {
+  return typeof navigator.share === "function";
+}
+
+function ocultarCompartir() {
+  $("#btn-compartir").classList.add("oculto");
+}
+
+async function esperarRepintado() {
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+}
+
+async function capturarGrafo() {
+  $("#panel").classList.add("oculto");
+  cy.fit(cy.elements(), 40);
+  await esperarRepintado();
+  return cy.png({
+    output: "blob-promise",
+    bg: "#111111",
+    full: true,
+    scale: 2,
+  });
+}
+
+function textoCompartir() {
+  const usadas = enTablero.size - 2;
+  return `Conecté «${origen}» con «${destino}» en Tejepalabras con ${usadas} palabra${usadas === 1 ? "" : "s"} puente.`;
+}
+
+async function compartirVictoria() {
+  if (!ganado || !puedeCompartir()) return;
+  const btn = $("#btn-compartir");
+  btn.disabled = true;
+  try {
+    const blob = await capturarGrafo();
+    const file = new File([blob], "tejepalabras.png", { type: "image/png" });
+    const payload = {
+      files: [file],
+      title: "Tejepalabras",
+      text: textoCompartir(),
+      url: urlJuego(),
+    };
+    if (navigator.canShare && !navigator.canShare(payload)) {
+      delete payload.files;
+    }
+    await navigator.share(payload);
+  } catch (e) {
+    if (e.name !== "AbortError") mensaje("no se pudo compartir", "error");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 function registrarViewport() {
   const entrada = $("#entrada");
   const contenedor = $("#grafo");
@@ -600,6 +662,7 @@ function registrarEventos() {
     await anadirPalabra(valor);
   });
   $("#btn-nuevo").addEventListener("click", nuevoJuego);
+  $("#btn-compartir").addEventListener("click", () => void compartirVictoria());
   $("#panel-cerrar").addEventListener("click", () =>
     $("#panel").classList.add("oculto")
   );

@@ -104,6 +104,28 @@ footer {
 .mensaje.error { color: #f87171; }
 .mensaje.ok { color: #3dd68c; }
 
+.btn-compartir {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 10px;
+  padding: 10px 14px;
+  background: #1a1a1a;
+  border: 1px solid #3dd68c;
+  border-radius: 8px;
+  color: #3dd68c;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-compartir:hover:not(:disabled) { background: #222; color: #5eead4; border-color: #5eead4; }
+.btn-compartir:disabled { opacity: 0.6; cursor: wait; }
+.btn-compartir .bi { font-size: 1rem; line-height: 1; }
+
 .umbral-info {
   flex-shrink: 0;
   text-align: center;
