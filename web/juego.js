@@ -17,10 +17,16 @@ let cy = null;
 let ganado = false;
 let ultimoPuntaje = null;
 let listo = false;
+let restaurando = false;
 
 const MODO_DIARIO = "diario";
 const MODO_PRACTICA = "practica";
 let modo = MODO_DIARIO;
+
+// Guardamos el progreso del reto diario en localStorage: GitHub Pages es
+// hosting estático (sin backend/BD), así que el único "caché" posible del
+// grafo armado por la persona vive en su propio navegador.
+const CLAVE_DIARIO = "tejepalabras-diario-estado";
 
 // PRNG determinístico (mulberry32) sembrado con la fecha de hoy: mismo
 // resultado para todo el mundo el mismo día, sin backend ni build extra.
@@ -59,6 +65,36 @@ function fechaHoyCorta() {
 
 function rngDelDia() {
   return mulberry32(seedDesdeTexto(fechaHoyStr()));
+}
+
+function cargarEstadoDiario() {
+  try {
+    const bruto = localStorage.getItem(CLAVE_DIARIO);
+    if (!bruto) return null;
+    const datos = JSON.parse(bruto);
+    if (datos.fecha !== fechaHoyStr()) return null;
+    if (!datos.origen || !datos.destino || !Array.isArray(datos.palabras)) return null;
+    return datos;
+  } catch {
+    return null;
+  }
+}
+
+function guardarEstadoDiario() {
+  if (modo !== MODO_DIARIO || !origen || !destino) return;
+  try {
+    localStorage.setItem(
+      CLAVE_DIARIO,
+      JSON.stringify({
+        fecha: fechaHoyStr(),
+        origen,
+        destino,
+        palabras: [...enTablero].filter((p) => p !== origen && p !== destino),
+      })
+    );
+  } catch {
+    // localStorage puede no estar disponible (modo privado, cuotas, etc.); sin caché no pasa nada grave.
+  }
 }
 
 /** @type {Map<string, Float32Array>} */
@@ -368,8 +404,12 @@ async function nuevoJuego(diario = false, par = null) {
   $("#modal-final").classList.add("oculto");
   bloquearEntrada(false);
   mensaje("preparando partida…");
+
+  let estadoGuardado = null;
   if (par) {
     [origen, destino] = par;
+  } else if (diario && (estadoGuardado = cargarEstadoDiario())) {
+    [origen, destino] = [estadoGuardado.origen, estadoGuardado.destino];
   } else {
     const rng = diario ? rngDelDia() : Math.random;
     [origen, destino] = await elegirObjetivos(rng);
@@ -383,11 +423,35 @@ async function nuevoJuego(diario = false, par = null) {
     { data: { id: destino }, classes: "objetivo" },
   ]);
   await reconstruir();
+  if (estadoGuardado?.palabras.length) await restaurarPalabras(estadoGuardado.palabras);
   ejecutarLayout();
   actualizarMenuModos();
   actualizarUrl();
-  mensaje("");
+  mensaje(ganado ? `puntaje: ${ultimoPuntaje}` : "", ganado ? "ok clicable" : "");
   $("#entrada").focus();
+  guardarEstadoDiario();
+}
+
+/** Reinserta, en orden, las palabras que la persona ya había agregado hoy. */
+async function restaurarPalabras(palabras) {
+  restaurando = true;
+  try {
+    for (const p of palabras) {
+      if (enTablero.has(p) || !existeEnEspanol(p)) continue;
+      try {
+        const embP = embedding(p);
+        for (const w of enTablero) {
+          if (w === p) continue;
+          guardarSim(p, w, similitudPct(embP, embedding(w)));
+        }
+      } catch {
+        continue;
+      }
+      await colocar(p);
+    }
+  } finally {
+    restaurando = false;
+  }
 }
 
 function actualizarMenuModos() {
@@ -650,7 +714,7 @@ function mostrarResultado({ verdes, grises, sueltos, puntaje }) {
   $("#puntaje-grises-total").textContent = grises * PUNTOS_GRIS;
   $("#puntaje-sueltos-cant").textContent = sueltos;
   $("#puntaje-sueltos-total").textContent = sueltos * PUNTOS_ROJO;
-  $("#modal-final").classList.remove("oculto");
+  if (!restaurando) $("#modal-final").classList.remove("oculto");
 }
 
 function ganar(aristas) {
@@ -700,10 +764,11 @@ async function colocar(p) {
   cy.add({ data: { id: p } });
   const aristas = await reconstruir();
   colocarNodoNuevo(p, aristas);
-  asegurarNodosVisibles();
+  if (!restaurando) asegurarNodosVisibles();
+  guardarEstadoDiario();
 
   if (ganado) return;
-  mensaje("");
+  if (!restaurando) mensaje("");
 }
 
 async function mostrarPanel(palabra) {
