@@ -657,10 +657,10 @@ function ganar(aristas) {
   ganado = true;
   const ruta = caminoMasCorto(aristas);
   marcarRuta(ruta);
-  const usadas = enTablero.size - 2;
-  mensaje(`conectado con ${usadas} palabra${usadas === 1 ? "" : "s"} puente`, "ok");
+  const resultado = calcularPuntaje(aristas, ruta);
+  mensaje(`puntaje: ${resultado.puntaje}`, "ok clicable");
   bloquearEntrada(true);
-  mostrarResultado(calcularPuntaje(aristas, ruta));
+  mostrarResultado(resultado);
 }
 
 function esDispositivoTactil() {
@@ -806,7 +806,7 @@ function textoDesafio() {
 
 function textoCompartir() {
   const puntos = ultimoPuntaje ?? 0;
-  return `Conecté '${origen}' con '${destino}'${etiquetaFecha()} en Tejepalabras con ${puntos} punto${puntos === 1 ? "" : "s"}.`;
+  return `Conecté '${origen}' con '${destino}'${etiquetaFecha()} en Tejepalabras con ${puntos} punto${puntos === 1 ? "" : "s"}. Crees que podrías hacerlo mejor?`;
 }
 
 async function copiarPortapapeles(texto) {
@@ -971,6 +971,9 @@ function registrarEventos() {
   });
   registrarMenuModos();
   $("#btn-compartir").addEventListener("click", () => void compartir());
+  $("#mensaje").addEventListener("click", () => {
+    if (ganado) $("#modal-final").classList.remove("oculto");
+  });
   $("#panel-cerrar").addEventListener("click", () =>
     $("#panel").classList.add("oculto")
   );

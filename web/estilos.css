@@ -168,6 +168,10 @@ footer {
 }
 .mensaje.error { color: #f87171; }
 .mensaje.ok { color: #3dd68c; }
+.mensaje.clicable {
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 .sugerencia {
   background: none;
