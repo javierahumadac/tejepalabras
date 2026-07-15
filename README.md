@@ -20,11 +20,11 @@ Todo corre en el navegador, sin backend:
 
 ## Diccionarios usados
 
-`web/diccionario_es.vocab` se construye combinando varias listas de palabras (solo quedan las que además tienen vector en SBWC, ver más abajo):
+`web/diccionario_es.vocab` se construye combinando varias listas de palabras (solo quedan las que además tienen vector en SBWC):
 
 - [Listado de palabras RAE (23.8.1)](https://github.com/rubenperezm/ListadosPalabrasRAE) de rubenperezm, lemario base derivado del diccionario de la RAE.
 - [lemarios](https://github.com/olea/lemarios) de Santiago Olea, lemario general del español y conjugaciones de verbos, dominio público. Usado para completar palabras que el listado RAE no separaba (p. ej. sustantivos con forma propia en -a/-o como "música"/"músico") y para sumar formas verbales conjugadas.
-- Marcas/nombres comerciales populares (tecnología, autos, moda, alimentación, aerolíneas, bancos, etc.), curados a mano y verificados uno por uno contra SBWC antes de sumarlos (solo entran las que el corpus reconoce con vector propio).
+- Marcas/nombres comerciales populares. **No provienen de ningún dataset o listado externo**: es una lista obtenida por un LLM.
 
 ## Modelo de similitud
 
