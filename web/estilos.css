@@ -79,6 +79,29 @@ header {
   gap: 4px;
   margin-bottom: 12px;
 }
+#ayuda-indice.menu-modos-opciones {
+  margin-bottom: 0;
+}
+.ayuda-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #888;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.ayuda-volver:hover { color: #ccc; }
+.ayuda-volver .bi { font-size: 0.95rem; }
+.ayuda-detalle .modal-privacidad {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
 .menu-modo-opcion {
   display: flex;
   align-items: center;
@@ -480,6 +503,11 @@ body.entrada-activa footer {
 .modal-cuerpo em {
   font-style: normal;
   color: #eee;
+}
+.modal-cuerpo .bi {
+  color: #eee;
+  font-size: 0.95em;
+  vertical-align: -0.05em;
 }
 .modal-privacidad {
   margin-top: 4px;

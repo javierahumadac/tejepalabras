@@ -20,8 +20,8 @@
       </span>
       <span id="destino">–</span>
     </div>
-    <button id="btn-nuevo" class="btn-icono" type="button" aria-label="Modo de juego" aria-haspopup="dialog" aria-controls="menu-modos" title="Modo de juego">
-      <i class="bi bi-list" aria-hidden="true"></i>
+    <button id="btn-nuevo" class="btn-icono" type="button" aria-label="Ajustes" aria-haspopup="dialog" aria-controls="menu-modos" title="Ajustes">
+      <i class="bi bi-gear" aria-hidden="true"></i>
     </button>
   </header>
 
@@ -64,19 +64,61 @@
       <div class="modal-cabecera">
         <div class="modal-titulo-wrap">
           <strong id="ayuda-titulo">Tejepalabras</strong>
-          <span class="modal-subtitulo">Cómo se juega</span>
+          <span id="ayuda-subtitulo" class="modal-subtitulo">Ayuda</span>
         </div>
         <button type="button" id="ayuda-cerrar" class="btn-icono btn-cerrar" aria-label="Cerrar">
           <i class="bi bi-x-lg" aria-hidden="true"></i>
         </button>
       </div>
       <div class="modal-cuerpo">
-        <p>Tienes dos palabras: un <em>origen</em> y un <em>destino</em>. El objetivo es conectarlas enlazando palabras.</p>
-        <p>Dos palabras se enlazan si son similares, no por ortografía ni porque suenen igual.</p>
-        <p>Envía una palabra y si es similar a alguna del tablero, aparecerá un hilo entre ellas. Ganas cuando origen y destino queden en la misma red.</p>
-        <p>Al entrar juegas el <em>reto del día</em>: las mismas dos palabras para todo el mundo, que cambian cada día. Con el botón de la esquina superior derecha puedes cambiar entre el reto del día y el <em>modo práctica</em> (pares aleatorios).</p>
-        <p>Toca un nodo para ver sus similitudes con el resto y su significado.</p>
-        <p class="modal-privacidad">Uso analítica anónima con <a href="https://www.goatcounter.com/" target="_blank" rel="noopener noreferrer">GoatCounter</a> para contar visitas y registrar palabras rechazadas. No cookies.</p>
+        <div id="ayuda-indice" class="menu-modos-opciones">
+          <button type="button" class="menu-modo-opcion" data-ayuda="jugar">
+            <i class="bi bi-joystick" aria-hidden="true"></i>
+            <span>Cómo se juega</span>
+          </button>
+          <button type="button" class="menu-modo-opcion" data-ayuda="trucos">
+            <i class="bi bi-lightbulb" aria-hidden="true"></i>
+            <span>Trucos</span>
+          </button>
+          <button type="button" class="menu-modo-opcion" data-ayuda="funciona">
+            <i class="bi bi-cpu" aria-hidden="true"></i>
+            <span>Cómo funciona</span>
+          </button>
+          <button type="button" class="menu-modo-opcion" data-ayuda="modos">
+            <i class="bi bi-sliders" aria-hidden="true"></i>
+            <span>Modos de juego</span>
+          </button>
+        </div>
+
+        <div id="ayuda-detalle" class="ayuda-detalle oculto">
+          <button type="button" id="ayuda-volver" class="ayuda-volver">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span>Volver</span>
+          </button>
+          <div class="ayuda-seccion" data-ayuda-seccion="jugar">
+            <p>Tienes dos palabras: un <em>origen</em> y un <em>destino</em>. El objetivo es conectarlas enlazando palabras.</p>
+            <p>Dos palabras se enlazan si son similares, no por ortografía ni porque suenen igual.</p>
+            <p>Envía una palabra y, si es similar a alguna del tablero, aparecerá un hilo. Ganas cuando origen y destino queden en la misma red.</p>
+            <p>Toca un nodo para ver sus similitudes con el resto y su significado presionando el icono <i class="bi bi-book" aria-hidden="true"></i>.</p>
+          </div>
+          <div class="ayuda-seccion oculto" data-ayuda-seccion="trucos">
+            <p>Piensa en <em>ideas o categorías</em> en común, no en rimas ni en letras parecidas.</p>
+            <p>Toca un nodo para ver el % de similitud con el resto.</p>
+            <p>Si te atascas, puedes presionar los nodos <em>origen</em> o <em>destino</em> y presionar el icono <i class="bi bi-lightbulb" aria-hidden="true"></i> para ver una lista de palabras similares.</p>
+          </div>
+          <div class="ayuda-seccion oculto" data-ayuda-seccion="funciona">
+            <p>La similitud mide <em>uso compartido en contexto</em> (embeddings), no ortografía ni sonido.</p>
+            <p>Todo corre en el navegador: vocabulario y vectores se cargan localmente.</p>
+            <p class="modal-privacidad">Uso analítica anónima con <a href="https://www.goatcounter.com/" target="_blank" rel="noopener noreferrer">GoatCounter</a> para contar visitas y registrar palabras rechazadas. No cookies.</p>
+          </div>
+          <div class="ayuda-seccion oculto" data-ayuda-seccion="modos">
+            <p>Existen actualmente dos modos de juego seleccionado en el ajustes <i class="bi bi-gear" aria-hidden="true"></i>:</p>
+            <p>El <em>reto del día</em>: las mismas dos palabras para todo el mundo! Van cambiando cada día.</p>
+            <p>El <em>modo práctica</em> genera pares aleatorios.</p>
+            <p></p>
+            <p>El <em>modo difícil</em> sube el umbral mínimo de similitud para que dos palabras se enlazen.</p>
+          </div>
+        </div>
       </div>
       <div class="modal-pie">
         <p class="modal-creditos">
@@ -100,7 +142,7 @@
       <div class="modal-cabecera">
         <div class="modal-titulo-wrap">
           <strong id="menu-modos-titulo">Tejepalabras</strong>
-          <span class="modal-subtitulo">Modo de juego</span>
+          <span class="modal-subtitulo">Ajustes</span>
         </div>
         <button type="button" id="menu-modos-cerrar" class="btn-icono btn-cerrar" aria-label="Cerrar">
           <i class="bi bi-x-lg" aria-hidden="true"></i>

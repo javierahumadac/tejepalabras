@@ -1382,18 +1382,56 @@ function registrarEventos() {
   const menuModos = $("#menu-modos");
   const modalFinal = $("#modal-final");
   const modalConfirmarDificultad = $("#modal-confirmar-dificultad");
-  const abrirAyuda = () => ayuda.classList.remove("oculto");
-  const cerrarAyuda = () => ayuda.classList.add("oculto");
+  const ayudaIndice = $("#ayuda-indice");
+  const ayudaDetalle = $("#ayuda-detalle");
+  const ayudaSubtitulo = $("#ayuda-subtitulo");
+  const AYUDA_TITULOS = {
+    jugar: "Cómo se juega",
+    trucos: "Trucos",
+    funciona: "Cómo funciona",
+    modos: "Modos de juego",
+  };
+
+  const mostrarAyudaIndice = () => {
+    ayudaIndice.classList.remove("oculto");
+    ayudaDetalle.classList.add("oculto");
+    ayudaSubtitulo.textContent = "Ayuda";
+    ayudaDetalle.querySelectorAll(".ayuda-seccion").forEach((s) => s.classList.add("oculto"));
+  };
+
+  const mostrarAyudaSeccion = (id) => {
+    if (!AYUDA_TITULOS[id]) return;
+    ayudaIndice.classList.add("oculto");
+    ayudaDetalle.classList.remove("oculto");
+    ayudaSubtitulo.textContent = AYUDA_TITULOS[id];
+    ayudaDetalle.querySelectorAll(".ayuda-seccion").forEach((s) => {
+      s.classList.toggle("oculto", s.dataset.ayudaSeccion !== id);
+    });
+  };
+
+  const abrirAyuda = (seccion = null) => {
+    if (seccion) mostrarAyudaSeccion(seccion);
+    else mostrarAyudaIndice();
+    ayuda.classList.remove("oculto");
+  };
+  const cerrarAyuda = () => {
+    ayuda.classList.add("oculto");
+    mostrarAyudaIndice();
+  };
   const cerrarMenuModos = () => menuModos.classList.add("oculto");
   const cerrarModalFinal = () => modalFinal.classList.add("oculto");
-  $("#btn-ayuda").addEventListener("click", abrirAyuda);
+  $("#btn-ayuda").addEventListener("click", () => abrirAyuda());
   $("#ayuda-cerrar").addEventListener("click", cerrarAyuda);
   ayuda.querySelector("[data-cerrar-ayuda]").addEventListener("click", cerrarAyuda);
+  $("#ayuda-volver").addEventListener("click", mostrarAyudaIndice);
+  ayudaIndice.querySelectorAll("[data-ayuda]").forEach((btn) => {
+    btn.addEventListener("click", () => mostrarAyudaSeccion(btn.dataset.ayuda));
+  });
 
   if (!ayudaVista) {
     ayudaVista = true;
     guardarAyudaVista();
-    abrirAyuda();
+    abrirAyuda("jugar");
   }
 
   $("#modal-final-cerrar").addEventListener("click", cerrarModalFinal);
@@ -1404,7 +1442,10 @@ function registrarEventos() {
     if (e.key !== "Escape") return;
     if (!modalConfirmarDificultad.classList.contains("oculto")) cancelarCambioDificultad();
     else if (!menuModos.classList.contains("oculto")) cerrarMenuModos();
-    else if (!ayuda.classList.contains("oculto")) cerrarAyuda();
+    else if (!ayuda.classList.contains("oculto")) {
+      if (!ayudaDetalle.classList.contains("oculto")) mostrarAyudaIndice();
+      else cerrarAyuda();
+    }
     else if (!modalFinal.classList.contains("oculto")) cerrarModalFinal();
   });
 }
